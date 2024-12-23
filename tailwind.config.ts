@@ -9,8 +9,11 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        "minburi-space3": ["Minburi Space3", "sans-serif"],
+        // "sd-gothicNeo1": ["Sandoll GothicNeo1Uni TTF", "sans-serif"],
+        "sd-minburi": ["SD Minburi", "sans-serif"],
+        "geist-mono": ["var(--font-geist-mono)", "monospace"],
         "monaspace-neon": ["var(--font-monaspace-neon)", "monospace"],
+        "monaspace-argon": ["var(--font-monaspace-argon)", "monospace"],
       },
       colors: {
         // background: "var(--background)",
@@ -31,7 +34,7 @@ export default {
         primary: "#bf7c63",
         secondary: "#ae6c54",
         accent: "#915944",
-        background: "#fbf7f5",
+        background: "#f1ded7",
         foreground: "#171717",
       },
     },

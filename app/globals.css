@@ -1,19 +1,20 @@
+@import url("https://ryj9d86xjh.execute-api.ap-northeast-2.amazonaws.com/v1/api/css/drop_fontstream_css/?sid=gAAAAABnYvMyKhNJ3bXwiPuHWQ7MMQ0KL-xv4opNXl4rrC1Q9qeBWIpljWSlc1icFOOa10yG8VhSI_SNaUsRdzGexIQFhU4atXQObAWdcPndvsK3qJbs4kb58Ow4y0rZVOWLbQYxHdgITyt4QkH1t8LtzJ12FDimtUNJHjykoFSGRRzSI5aWd5yG4iUTZwTi3p_Y7mSbr4jzfIc4C427w_CqSI_n_8MdMCCFHr9PwRiRQqMR8ifU02meorv9RmalCVWwxSWEsymw");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-@font-face {
-  font-family: "Minburi Space3";
-  src: url("https://ryj9d86xjh.execute-api.ap-northeast-2.amazonaws.com/v1/api/css/drop_fontstream_css/?sid=gAAAAABnYvMyKhNJ3bXwiPuHWQ7MMQ0KL-xv4opNXl4rrC1Q9qeBWIpljWSlc1icFOOa10yG8VhSI_SNaUsRdzGexIQFhU4atXQObAWdcPndvsK3qJbs4kb58Ow4y0rZVOWLbQYxHdgITyt4QkH1t8LtzJ12FDimtUNJHjykoFSGRRzSI5aWd5yG4iUTZwTi3p_Y7mSbr4jzfIc4C427w_CqSI_n_8MdMCCFHr9PwRiRQqMR8ifU02meorv9RmalCVWwxSWEsymw")
-    format("woff2");
-  font-weight: 400;
-  font-style: normal;
-}
+
+
 /* 
 :root {
   --background: #ffffff;
   --foreground: #171717;
 } */
+
+:root {
+  font-family: "SD Minburi", sans-serif;
+}
 
 /* does not support dark mode yet */
 /* @media (prefers-color-scheme: dark) {
