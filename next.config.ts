@@ -1,6 +1,6 @@
 import type { NextConfig } from "next";
-// import rehypeKatex from "rehype-katex";
-// import remarkGfm from "remark-gfm";
+import rehypeKatex from "rehype-katex";
+import remarkGfm from "remark-gfm";
 
 import createMDX from "@next/mdx";
 
@@ -11,8 +11,8 @@ const nextConfig: NextConfig = {
 
 const withMDX = createMDX({
   options: {
-    // remarkPlugins: [remarkGfm],
-    // rehypePlugins: [[rehypeKatex, { strict: true, throwOnError: true }]],
+    remarkPlugins: [remarkGfm],
+    rehypePlugins: [[rehypeKatex, { strict: true, throwOnError: true }]],
   },
 });
 
