@@ -31,8 +31,8 @@ export default {
           900: "#35271C",
           950: "#1B130E",
         },
-        primary: "#3E5879",
-        secondary: "#213555",
+        primary: "#213555",
+        secondary: "#3E5879",
         /*
          #213555
         secondary: "#3E5879",
