@@ -9,7 +9,6 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        // "sd-gothicNeo1": ["Sandoll GothicNeo1Uni TTF", "sans-serif"],
         "sd-minburi": ["SD Minburi", "sans-serif"],
         "geist-mono": ["var(--font-geist-mono)", "monospace"],
         "monaspace-neon": ["var(--font-monaspace-neon)", "monospace"],

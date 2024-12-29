@@ -4,13 +4,10 @@
 @tailwind components;
 @tailwind utilities;
 
-
-
-/* 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-} */
+  --background: #f5efe7;
+  --foreground: #171717; /* text-neutral-900 */
+}
 
 :root {
   font-family: "SD Minburi", sans-serif;
