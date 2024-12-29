@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 import { Geist_Mono } from "next/font/google";
-// import localFont from "next/font/local";
 
+// import localFont from "next/font/local";
 import Header from "@/components/header";
 import { cn } from "@/lib/utils";
 
@@ -11,16 +11,6 @@ export const metadata: Metadata = {
   title: "stardue128",
   description: "정성을 다해 작성합니다",
 };
-
-// const monaspaceArgonVF = localFont({
-//   src: "../fonts/MonaspaceArgonVarVF[wght,wdth,slnt].woff2",
-//   variable: "--font-monaspace-argon",
-// });
-
-// const monaspaceNeonVF = localFont({
-//   src: "../fonts/MonaspaceNeonVarVF[wght,wdth,slnt].woff2",
-//   variable: "--font-monaspace-neon",
-// });
 
 const geistMono = Geist_Mono({
   subsets: ["latin-ext"],
