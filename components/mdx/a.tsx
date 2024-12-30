@@ -2,7 +2,7 @@ export default function A({ children, href }: { children: React.ReactNode; href?
   return (
     <a 
       href={href} 
-      className="text-primary hover:underline decoration-2 underline-offset-2"
+      className="text-foreground hover:text-primary hover:underline decoration-2 underline-offset-2"
       target="_blank"
       rel="noopener noreferrer"
     >
