@@ -10,7 +10,7 @@
 }
 
 :root {
-  font-family: "SD Minburi", sans-serif;
+  font-family: "Sandol GothicNeoUni TTF", sans-serif;
 }
 
 /* does not support dark mode yet */
@@ -20,6 +20,8 @@
     --foreground: #ededed;
   }
 } */
+
+
 
 body {
   color: var(--foreground);

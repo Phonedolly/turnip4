@@ -1,6 +1,7 @@
 import type { Config } from "tailwindcss";
 
 export default {
+  darkMode: "selector", // temporarily disable dark mode
   content: [
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
@@ -9,8 +10,16 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        "sd-minburi": ["SD Minburi", "sans-serif"],
+        // "sd-minburi": ["SD Minburi", "sans-serif"],
+        "sandol-gothicneo-uni": ["Sandol GothicNeoUni TTF", "sans-serif"],
+        inter: ["var(--font-inter)", "sans-serif"],
+        geist: ["var(--font-geist)", "sans-serif"],
         "geist-mono": ["var(--font-geist-mono)", "monospace"],
+        "font-primary": [
+          "var(--font-geist)",
+          "Sandol GothicNeoUni TTF",
+          "sans-serif",
+        ],
         "monaspace-neon": ["var(--font-monaspace-neon)", "monospace"],
         "monaspace-argon": ["var(--font-monaspace-argon)", "monospace"],
       },
