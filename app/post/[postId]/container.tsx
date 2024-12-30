@@ -12,7 +12,7 @@ type UpdateDateProps = {
 
 const Title = ({ title }: { title: string }) => {
   return (
-    <h1 className="text-3xl sm:text-3xl py-1 md:text-4xl lg:text-5xl font-bold tracking-tight font-geist text-foreground">
+    <h1 className="py-0.5 font-geist text-3xl font-bold tracking-tight text-foreground sm:text-4xl lg:text-5xl">
       {title}
     </h1>
   );
@@ -20,7 +20,7 @@ const Title = ({ title }: { title: string }) => {
 
 const Description = ({ description }: { description: string }) => {
   return (
-    <p className="text-2xl md:text-2xl lg:text-2xl font-normal font-geist text-foreground tracking-tighter">
+    <p className="font-geist text-xl font-normal tracking-tighter text-foreground md:text-2xl lg:text-2xl">
       {description}
     </p>
   );
@@ -38,12 +38,12 @@ const UpdateDate = ({ createdAt, updatedAt }: UpdateDateProps) => {
     day: "numeric",
   });
   return (
-    <div className="flex flex-col md:py-0.5">
-      <p className="text-base font-normal font-geist text-foreground tracking-tight">
+    <div className="flex flex-col py-0.5 md:py-1">
+      <p className="font-geist text-sm font-normal tracking-tight text-foreground sm:text-base">
         {createdDate}에 작성
       </p>
-      <div className="w-fit flex flex-col">
-        <p className="text-base font-normal font-geist text-foreground tracking-tight">
+      <div className="flex w-fit flex-col">
+        <p className="font-geist text-sm font-normal tracking-tight text-foreground sm:text-base">
           {updatedDate}에 업데이트
         </p>
         <Divider />
@@ -53,7 +53,7 @@ const UpdateDate = ({ createdAt, updatedAt }: UpdateDateProps) => {
 };
 
 const Divider = () => {
-  return <div className="relative bottom-px w-full h-px bg-foreground"></div>;
+  return <div className="relative bottom-px h-px w-full bg-foreground"></div>;
 };
 
 const Info = ({ frontmatter }: { frontmatter: PostMetadata }) => {
@@ -74,8 +74,8 @@ export default async function Container({
   const { title } = await frontmatter;
 
   return (
-    <div className="relative w-full px-0.5 py-1.5 flex flex-col gap-y-0.5 md:gap-y-1.5">
-      <div className="flex flex-col gap-y-0.5 md:gap-y-2">
+    <div className="relative flex w-full flex-col gap-y-0 py-1 md:gap-y-1.5">
+      <div className="flex flex-col gap-y-0 md:gap-y-2">
         <Title title={title} />
         <Info frontmatter={await frontmatter} />
       </div>
