@@ -12,7 +12,7 @@ type UpdateDateProps = {
 
 const Title = ({ title }: { title: string }) => {
   return (
-    <h1 className="py-0.5 font-geist text-3xl font-bold tracking-tight text-foreground sm:text-4xl lg:text-5xl">
+    <h1 className="py-0.5 font-geist text-3xl font-bold tracking-tight text-foreground lg:text-4xl">
       {title}
     </h1>
   );
@@ -75,7 +75,7 @@ export default async function Container({
 
   return (
     <div className="relative flex w-full flex-col gap-y-0 py-1 md:gap-y-1.5">
-      <div className="flex flex-col gap-y-0 md:gap-y-2">
+      <div className="flex flex-col gap-y-0 md:gap-y-0.5">
         <Title title={title} />
         <Info frontmatter={await frontmatter} />
       </div>
