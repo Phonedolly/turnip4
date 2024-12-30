@@ -1,6 +1,8 @@
 import * as fs from "fs/promises";
 import * as path from "path";
 
+import Container from "./container";
+
 interface PostPageProps {
   params: Promise<{
     postId: string;
@@ -9,10 +11,14 @@ interface PostPageProps {
 
 export default async function Page({ params }: PostPageProps) {
   const postId = (await params).postId;
+  const page = await import(`@/posts/${postId}.mdx`);
+  const { default: Post, frontmatter } = page;
 
-  const { default: Post } = await import(`@/posts/${postId}.mdx`);
-
-  return <Post />;
+  return (
+    <Container frontmatter={frontmatter}>
+      <Post />
+    </Container>
+  );
 }
 
 export async function generateStaticParams() {
@@ -23,3 +29,12 @@ export async function generateStaticParams() {
 }
 
 export const dynamicParams = false;
+
+export async function generateMetadata({ params }: PostPageProps) {
+  const postId = (await params).postId;
+  const { frontmatter } = await import(`@/posts/${postId}.mdx`);
+  return {
+    title: frontmatter.title,
+    description: frontmatter.description,
+  };
+}
