@@ -2,11 +2,11 @@ import Link from "next/link";
 
 const Stardue128Identity = () => {
   return (
-    <Link href="/" className="relative w-fit pr-2.5 group flex flex-col">
-      <h1 className="text-2xl sm:text-3xl lg:text-4xl font-normal tracking-tight font-geist-mono text-primary select-none">
+    <Link href="/" className="relative w-fit group flex flex-col">
+      <h1 className="text-3xl sm:text-4xl font-normal font-geist tracking-tight text-foreground hover:text-primary select-none">
         stardue128
       </h1>
-      <div className="group-hover:bg-primary w-full h-0.5 absolute bottom-0.5"></div>
+      {/* <div className="group-hover:bg-foreground w-full h-0.5 absolute -bottom-px ml-[2px]"></div> */}
     </Link>
   );
 };
@@ -21,7 +21,7 @@ const MenuItem = ({
   return (
     <Link
       href={href}
-      className="text-secondary font-semibold tracking-tight text-base sm:text-lg"
+      className="text-foreground font-semibold tracking-tight text-base sm:text-lg hover:text-primary"
     >
       {children}
     </Link>
@@ -39,7 +39,7 @@ const Menu = () => {
 
 export default function Header() {
   return (
-    <header className="w-full flex flex-row justify-between">
+    <header className="w-full py-0.5 md:py-1.5 flex flex-row justify-between border-b border-foreground">
       <Stardue128Identity />
       <Menu />
     </header>
