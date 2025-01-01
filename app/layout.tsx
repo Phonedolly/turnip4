@@ -42,7 +42,7 @@ export default function RootLayout({
       >
         <div
           className={cn(
-            "flex w-full flex-col items-center justify-center",
+            "flex w-full mx-auto flex-col items-center justify-center",
             "my-6 gap-y-2 px-5",
             "sm:my-8 sm:gap-y-4 sm:px-12",
             "max-w-screen-lg md:my-16 md:gap-y-3.5 md:px-12",

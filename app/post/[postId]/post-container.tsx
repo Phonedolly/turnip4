@@ -32,7 +32,7 @@ const UpdateDate = ({ createdAt, updatedAt }: UpdateDateProps) => {
   const updatedDate = epochToDateString(updatedAt);
 
   return (
-    <div className="flex w-1/2 max-w-[30vw] flex-col border-b border-foreground">
+    <div className="flex w-1/2 max-w-fit flex-col border-b border-foreground">
       <p className="font-geist text-sm font-normal tracking-tight text-foreground sm:text-base">
         {createdDate}에 작성
       </p>
