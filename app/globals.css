@@ -9,10 +9,6 @@
   --foreground: #171717; /* text-neutral-900 */
 }
 
-:root {
-  font-family: "Sandol GothicNeoUni TTF", sans-serif;
-}
-
 /* does not support dark mode yet */
 /* @media (prefers-color-scheme: dark) {
   :root {
@@ -20,8 +16,6 @@
     --foreground: #ededed;
   }
 } */
-
-
 
 body {
   color: var(--foreground);

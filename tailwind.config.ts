@@ -6,18 +6,18 @@ export default {
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
+    "./posts/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
     extend: {
       fontFamily: {
-        // "sd-minburi": ["SD Minburi", "sans-serif"],
-        "sandol-gothicneo-uni": ["Sandol GothicNeoUni TTF", "sans-serif"],
-        inter: ["var(--font-inter)", "sans-serif"],
-        geist: ["var(--font-geist)", "sans-serif"],
+        // "sd-minburi": ["Sandoll GothicNeo1Uni TTF", "sans-serif"],
+        // "sandoll-gothicneo-uni": ["Sandoll GothicNeo1Uni TTF", "sans-serif"],
+        pretendard: ["var(--font-pretendard)", "sans-serif"],
+        // "geist": ["var(--font-geist)", "sans-serif"],
         "geist-mono": ["var(--font-geist-mono)", "monospace"],
         "font-primary": [
-          "var(--font-geist)",
-          "Sandol GothicNeoUni TTF",
+          "var(--font-pretendard)",
           "sans-serif",
         ],
       },

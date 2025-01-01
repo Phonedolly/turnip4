@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
 
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist_Mono } from "next/font/google";
+import localFont from "next/font/local";
 
 // import localFont from "next/font/local";
 import Header from "@/components/header";
@@ -17,13 +18,16 @@ const geistMono = Geist_Mono({
   weight: "variable",
   variable: "--font-geist-mono",
 });
-
-const geist = Geist({
-  subsets: ["latin-ext"],
-  weight: "variable",
-  variable: "--font-geist",
-  fallback: ["Sandol GothicNeoUni TTF"],
+const pretendard = localFont({
+  src: "../fonts/PretendardVariable.woff2",
+  variable: "--font-pretendard",
 });
+// const geist = Geist({
+//   subsets: ["latin-ext"],
+//   weight: "variable",
+//   variable: "--font-geist",
+//   fallback: ["SD November"],
+// });
 
 export default function RootLayout({
   children,
@@ -36,13 +40,14 @@ export default function RootLayout({
         className={cn(
           `antialiased`,
           geistMono.variable,
-          geist.variable,
-          "bg-background font-geist text-foreground",
+          pretendard.variable,
+          // geist.variable,
+          "font-pretendard bg-background text-foreground",
         )}
       >
         <div
           className={cn(
-            "flex w-full mx-auto flex-col items-center justify-center",
+            "mx-auto flex w-full flex-col items-center justify-center",
             "my-6 gap-y-2 px-5",
             "sm:my-8 sm:gap-y-4 sm:px-12",
             "max-w-screen-lg md:my-16 md:gap-y-3.5 md:px-12",
