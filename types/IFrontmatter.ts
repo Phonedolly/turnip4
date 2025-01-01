@@ -6,4 +6,5 @@ export interface IFrontmatter {
   tags: string[];
   categories: string[];
   titleId: string;
+  readingTime: number; // minutes
 }
