@@ -20,8 +20,6 @@ export default {
           "Sandol GothicNeoUni TTF",
           "sans-serif",
         ],
-        "monaspace-neon": ["var(--font-monaspace-neon)", "monospace"],
-        "monaspace-argon": ["var(--font-monaspace-argon)", "monospace"],
       },
       /* from https://colorhunt.co/palette/2135553e5879d8c4b6f5efe7 */
       colors: {
