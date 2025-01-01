@@ -39,7 +39,7 @@ const Menu = () => {
 
 export default function Header() {
   return (
-    <header className="w-full py-0.5 md:py-1.5 flex flex-row justify-between border-b border-foreground">
+    <header className="w-full py-0.5 md:py-0.5 flex flex-row justify-between border-b-2 border-foreground">
       <Stardue128Identity />
       <Menu />
     </header>
