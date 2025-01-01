@@ -1,0 +1,467 @@
+---
+title: "리눅스 커널 소스의 __setup() 매크로"
+description: 리눅스 커널 소스에서 볼 수 있는 `__setup()` 매크로를 알아봅니다.
+createdAt: 1692924158986
+updatedAt:
+  - 1692924158986
+  - 1693235334469
+  - 1693282860212
+tags:
+  - 리눅스
+categories:
+  - 리눅스
+titleId: setup-macro-of-kernel
+---
+
+![](./setup-macro-of-kernel/linux-2025130.svg)
+
+리눅스 커널 소스에서 볼 수 있는 `__setup()` 매크로를 알아보겠습니다.
+
+# 부팅 시 커널이 체크할 파라미터를 정의하는 `__setup()` 매크로
+
+`__setup()` 매크로는 아래와 같이 정의되어 있습니다.
+
+```C fileName="include/linux/init.h@328"
+#define __setup(str, fn)						\
+	__setup_param(str, fn, fn, 0)
+```
+
+여기서 `str`은 identifier 역할, `fn`은 콜백 함수 역할을 합니다.
+
+`__setup()` 매크로는 GRUB 부트로더가 커널에 넘기는 파라미터 중 `obs_kernel_param`을 정의하도록 합니다. 그럼 커널은 부팅 시 이 `__setup()` 매크로가 정의한 파라미터가 실제로 정의되었는지를 판단하고, 실제로 그렇다면 `__setup()` 매크로에 함께 넘긴 콜백 함수를 수행하도록 합니다.
+
+예로 들 파일은 간단한 `drivers/gpu/drm/drm_nomodeset.c`입니다. 커널 버전은 6.1 기준으로 하겠습니다.
+
+```C fileName="drivers/gpu/drm/drm_nomodeset.c" showLineNumber highlights='{"red":"24"}' skip="2-13"
+// SPDX-License-Identifier: GPL-2.0
+
+#include <linux/module.h>
+#include <linux/types.h>
+
+static bool drm_nomodeset;
+
+bool drm_firmware_drivers_only(void)
+{
+	return drm_nomodeset;
+}
+EXPORT_SYMBOL(drm_firmware_drivers_only);
+
+static int __init disable_modeset(char *str)
+{
+	drm_nomodeset = true;
+
+	pr_warn("Booted with the nomodeset parameter. Only the system framebuffer will be available\n");
+
+	return 1;
+}
+
+/* Disable kernel modesetting */
+__setup("nomodeset", disable_modeset);
+```
+
+이 파일에서는 맨 마지막 라인에서 `__setup()` 매크로를 사용하고 있습니다.
+
+`__setup()` 매크로의 정의를 살펴봅시다.
+
+```C fileName="include/linux/init.h" skip="1-42,53-309,330-378" showLineNumber highlights={{"red":"315-321", "sky":"52", "green":"43-45","yellow": "328-329"}}
+ * Don't forget to initialize data not at file scope, i.e. within a function,
+ * as gcc otherwise puts the data into the bss section and not into the init
+ * section.
+ */
+
+/_ These are for everybody (although not all archs will actually
+discard it in modules) _/
+#define **init **section(".init.text") **cold **latent_entropy **noinitretpoline
+#define **initdata **section(".init.data")
+#define **initconst \_\_section(".init.rodata")
+```
+
+```C fileName="include/linux/init.h" startLineNumber="310"
+ * Only for really core code.  See moduleparam.h for the normal way.
+ *
+ * Force the alignment so the compiler doesn't space elements of the
+ * obs_kernel_param "array" too far apart in .init.setup.
+ */
+#define __setup_param(str, unique_id, fn, early)			\
+	static const char __setup_str_##unique_id[] __initconst		\
+		__aligned(1) = str; 					\
+	static struct obs_kernel_param __setup_##unique_id		\
+		__used __section(".init.setup")				\
+		__aligned(__alignof__(struct obs_kernel_param))		\
+		= { __setup_str_##unique_id, fn, early }
+
+/*
+ * NOTE: __setup functions return values:
+ * @fn returns 1 (or non-zero) if the option argument is "handled"
+ * and returns 0 if the option argument is "not handled".
+ */
+#define __setup(str, fn)						\
+	__setup_param(str, fn, fn, 0)
+```
+
+`__setup()` 매크로의 정의에서 이 매크로는 내부적으로 `__setup_param()` 매크로를 호출하고 있습니다. `__setup_param()` 매크로 내부를 살펴봅니다.
+
+`init.h`의 316 라인에 있는 `__initconst` 매크로는 `include/linux/init.h`에 나와있듯이 `.init.rodata` 섹션에 해당 데이터를 저장하도록 설정합니다. 여기서 `rodata`란 **초기화 된 전역 변수**를 말합니다. 일반적으로 초기화되지 않은 전역 변수는 `bss` 영역에 저장되는데, 43~45 라인에 나와있듯이 `__section` 매크로를 사용할 때에는 변수가 초기화가 되어있는지를 꼭 확인해야 합니다. `__section()` 매크로에 대한 자세한 정보는 [해당 라인](https://github.com/torvalds/linux/blob/v6.1/include/linux/compiler_attributes.h#L316C1-L316C78)과 GCC 문서([함수](https://gcc.gnu.org/onlinedocs/gcc/Common-Function-Attributes.html#index-section-function-attribute), [변수](https://gcc.gnu.org/onlinedocs/gcc/Common-Variable-Attributes.html#index-section-variable-attribute))를 참고하시기 바랍니다.
+
+```C fileName="include/linux/init.h" startLineNumber="329" showLineNumber
+__setup_param("nomodeset", disable_modeset, disable_modeset, 0)
+```
+
+앞선 `drivers/gpu/drm/drm_nomodeset.c`의 24라인에서 `__setup("nomodeset", disable_modeset);`으로 `__setup()` 매크로를 호출한 것을 상기해봅니다. 그렇다면 `include/linux/init.h`에서 이 매크로는 `__setup_param("nomodeset", disable_modeset, disable_modeset, 0)`을 호출하고, 이는 컴파일 시 아래와 같이 치환됩니다.
+
+```C
+static const char __setup_str_nomodeset[] __initconst __aligned(1) = "nomodeset";
+static struct obs_kernel_param __setup_disable_modeset __used __section("init.setup") __aligned(_alignof__(struct obs_kernel_param)) = {__setup_str_disable_modeset, disable_nomodeset, 0}
+```
+
+C에서 <code>{`##`}</code> 연산자는 매크로 내부에서 문자열을 붙이는 역할을 합니다. 예를 들어 <code>{`\**setup*str\*##unique_id[]`}</code>에서 <code>unique_id</code>가 <code>hello</code>라면 이는 컴파일 시 <code> {`**setup_str_hello[]`}</code>로 치환됩니다.
+로 치환됩니다.
+
+여기서 구조체 `obs_kernel_param`의 정의는 이렇습니다.
+
+```C fileName="include/linux/init.h" startLineNumber="303" showLineNumber notEnd
+struct obs_kernel_param {
+	const char *str;
+	int (*setup_func)(char *);
+	int early;
+};
+```
+
+순서대로 `str`은 커널 매개변수의 이름, `*setup_func`는 어떤 동작을 할지 정의하는 콜백 함수, `early`는 이 파라미터가 early parameter인지를 결정하는 변수입니다. `early`의 값이 `1`이면 early parameter이고, `0`이면 아닙니다. 여기서는 `__setup_param(str, fn, fn, 0)`으로 호출했으므로 early의 값은 `0`이 됩니다.
+
+```C fileName="include/asm-generic/vmlinux.lds.h" startLineNumber="940" showLineNumber notEnd
+#define INIT_SETUP(initsetup_align)					\
+		. = ALIGN(initsetup_align);					\
+		__setup_start = .;							\
+		KEEP(*(.init.setup))						\
+		__setup_end = .;
+```
+
+```C fileName="init/main.c" showLineNumber startLineNumber="199" notEnd
+extern const struct obs_kernel_param __setup_start[], __setup_end[];
+```
+
+또 `include/linux/init.h`의 318라인에서 `__section(".init.setup")`을 사용했는데, `include/asm-generic/vmlinx.lds.h`의 `INIT_SETUP()` 매크로에 의해 `__setup()` 매크로로 정의되는 `__setup_##unique_id` 변수들은 `__setup_start`와 `__setup_end` 사이에 위치하게 됩니다. `__setup_start`와 `__setup_end`는 각각 `.init.setup` 섹션의 시작, 끝을 나타냅니다.
+
+<code>__aligned</code>는 GCC 키워드로서 <code>__aligned(n)</code>는 최소 <code>n</code>의 배수 위치에 변수가 위치하도록 강제로 정렬하도록 합니다.
+
+# 실제 부팅 과정 살펴보기
+
+```C fileName="init/main.c" skip="1-611,620-632,648-669,671-935,938-973,978-1147,1149-1657" highlights={{"yellow":"633","green":"634-647","blue":"974-977"}}
+/*
+/*
+ * We need to store the untouched command line for future reference.
+ * We also need to store the touched command line since the parameter
+ * parsing is performed in place, and we should allow a component to
+ * store reference of name/value for future reference.
+ */
+static void __init setup_command_line(char *command_line)
+{
+```
+
+```C showLineNumber startLineNumber="633"
+	static_command_line = memblock_alloc(len, SMP_CACHE_BYTES);
+	if (!static_command_line)
+		panic("%s: Failed to allocate %zu bytes\n", __func__, len);
+
+    if (xlen) {
+    	/*
+    	 * We have to put extra_command_line before boot command
+    	 * lines because there could be dashes (separator of init
+    	 * command line) in the command lines.
+    	 */
+    	strcpy(saved_command_line, extra_command_line);
+    	strcpy(static_command_line, extra_command_line);
+    }
+    strcpy(saved_command_line + xlen, boot_command_line);
+    strcpy(static_command_line + xlen, command_line);
+
+```
+
+```C showLineNumber startLineNumber="670"
+}
+```
+
+```C showLineNumber startLineNumber="936"
+asmlinkage __visible void __init __no_sanitize_address start_kernel(void)
+{
+```
+
+````C showLineNumber startLineNumber="974"
+	after_dashes = parse_args("Booting kernel",
+				  static_command_line, __start___param,
+				  __stop___param - __start___param,
+				  -1, -1, NULL, &unknown_bootoption);
+```C showLineNumber startLineNumber="1148"
+}
+```
+
+이제 부팅 과정에서 어떻게 `nomodeset` 옵션이 적용되는지를 살펴보겠습니다.
+
+`init/main.c`에는 리눅스 커널이 부팅할 때 가장 처음 실행되는 코드들이 모여있습니다. 부팅 과정의 일부로 중간에 936라인의 `start_kernel()` 함수도 실행되는데, 이를 살펴보겠습니다.
+
+## `parse_args()` 함수
+
+```C fileName="include/linux/moduleparmam.h" showLineNumber startLineNumber="385" notEnd
+/* Called on module insert or kernel boot */
+extern char *parse_args(const char *name,
+		      char *args,
+		      const struct kernel_param *params,
+		      unsigned num,
+		      s16 level_min,
+		      s16 level_max,
+		      void *arg,
+		      int (*unknown)(char *param, char *val,
+				     const char *doing, void *arg));
+```
+
+### `const char *name`으로서 `"Booting kernel"`
+
+`name` 파라미터는 콘솔에 출력하는 정보입니다.
+
+### `const char *args`로서 `static_command_line`
+
+`start_kernel()` 함수 내부에서는 부팅 옵션(parameter)을 처리하는 `parse_args()` 함수도 호출합니다. 여기서 `static_command_line` 변수는 `static char*` 타입으로서 `setup_command_line()` 함수에서 값이 채워집니다. 이때 이 변수에 공간을 할당해주는 `memblock_alloc()` 함수(633라인)의 구현은 아키텍처 종속적입니다.
+
+### `const struct kernel_param *params`로서 `__start___param`
+
+이 절에서는 `__start___param` 및 `__stop___param`도 알아보겠습니다. 두 변수는 아래와 같이 정의되어 있습니다.
+
+```C fileName="include/linux/moduleparam.h" showLineNumber startLineNumber="83" notEnd
+extern const struct kernel_param __start___param[], __stop___param[];
+```
+
+```C fileName="include/asm-generic/vmlinux.lds.h" showLineNumber startLineNumber="552" notEnd
+	/* Built-in module parameters. */					\
+	__param : AT(ADDR(__param) - LOAD_OFFSET) {			\
+		__start___param = .;							\
+		KEEP(*(__param))								\
+		__stop___param = .;								\
+	}
+```
+
+그리고 `include/asm-generic/vmlinux.lds.h`의 552라인에 의해 두 변수는 built-in 모듈 파라미터의 시작점과 끝점을 나타내며, 위치는 `__param` 섹션입니다.
+
+```C fileName="include/linux/moduleparam.h" highlights='{"green":"7", "purple":"8"}' showLineNumber startLineNumber="285" notEnd
+/* This is the fundamental function for registering boot/module
+   parameters. */
+#define __module_param_call(prefix, name, ops, arg, perm, level, flags)		\
+	/* Default value instead of permissions? */								\
+	static const char __param_str_##name[] = prefix #name;					\
+static struct kernel_param __moduleparam_const __param_##name				\
+__used __section("__param")													\
+	__aligned(__alignof__(struct kernel_param))								\
+	= { __param_str_##name, THIS_MODULE, ops,								\
+	    VERIFY_OCTAL_PERMISSIONS(perm), level, flags, { arg } }
+```
+
+이렇게 `include/linux/moduleparam.h`의 285라인에서 built-in 모듈 파라미터를 `__param` 섹션에 저장하는 모습을 볼 수 있습니다. 추가로, `__aligned(__alignof__(struct kernel_param))	`으로 구조체 `kernel_param`의 크기에 맞게 정렬하였습니다. 단, `__module_param_call()` 매크로가 일반 코드에서 직접 호출되지는 않는데, 이는 아래에서 살펴보겠습니다.
+
+### `unsigned num`으로서 `__stop___param - __start___param`
+
+따라서`__stop___param - __start___param`은 built-in 모듈 파라미터의 개수가 됩니다.
+
+### `s16 level_min`, `s16 level_max`로서 `-1`, `-1`
+
+```C fileName="include/linux/moduleparam.h" showLineNumber startLineNumber="166" notEnd
+/**
+ * module_param_cb - general callback for a module/cmdline parameter
+ * @name: a valid C identifier which is the parameter name.
+ * @ops: the set & get operations for this parameter.
+ * @arg: args for @ops
+ * @perm: visibility in sysfs.
+ *
+ * The ops can have NULL set or get functions.
+ */
+#define module_param_cb(name, ops, arg, perm)				      \
+	__module_param_call(MODULE_PARAM_PREFIX, name, ops, arg, perm, -1, 0)
+```
+
+한편 `__module_param_call()` 매크로를 호출하는 `module_param_cb()` 매크로가 `__module_param_call()` 매크로의 level 파라미터에 **`-1`을 지정**하고 있으며, [`module_param_cb()` 매크로는 `module_param_named()` 매크로에 의해 호출되고, 이 `module_param_named()` 매크로는 호출하는 `module_param()` 매크로가 호출합니다.](https://elixir.bootlin.com/linux/v6.1/source/include/linux/moduleparam.h) built-in 모듈은 `module_param()` 매크로로 초기화를 하니, level이 항상 `-1`이 되는 셈입니다.
+
+`parse_args()` 함수에서 `level_min`, `level_max`가 둘 다 `-1`로 설정되었는데 이것이 어떤 영향을 미치는지는 아래에서 알아봅니다.
+
+### `void *arg`로서 `NULL`
+
+이번 사례에서는 이 `arg` 파라미터가 하는 일이 없습니다. 자세한 사항은 아래에서 살펴봅니다.
+
+### `int (*unknown)(char *param, char *val, const char *doing, void *arg)`로서 `&unknown_bootoption`
+
+Unknown Boot Option을 핸들링하는 함수의 포인터입니다. 여기서는 `unknown_bootoption` 함수의 포인터를 넘겨주었는데, 자세한 사항은 아래에서 알아봅니다.
+
+## `parse_args()` 함수의 메커니즘
+
+```C fileName="linux/kernel/params.c" skip="1-115,194-214" highlights={{"yellow":"131,133,134", "green":"152-155","sky":"184","fuchsia":"188,191","blue":"189,190"}}
+/*
+static int parse_one(char *param,
+		     char *val,
+		     const char *doing,
+		     const struct kernel_param *params,
+		     unsigned num_params,
+		     s16 min_level,
+		     s16 max_level,
+		     void *arg,
+		     int (*handle_unknown)(char *param, char *val,
+				     const char *doing, void *arg))
+{
+	unsigned int i;
+	int err;
+
+    /* Find parameter */
+    for (i = 0; i < num_params; i++) {
+    	if (parameq(param, params[i].name)) {
+    		if (params[i].level < min_level
+    		    || params[i].level > max_level)
+    			return 0;
+    		/* No one handled NULL, so do it here. */
+    		if (!val &&
+    		    !(params[i].ops->flags & KERNEL_PARAM_OPS_FL_NOARG))
+    			return -EINVAL;
+    		pr_debug("handling %s with %p\n", param,
+    			params[i].ops->set);
+    		kernel_param_lock(params[i].mod);
+    		if (param_check_unsafe(&params[i]))
+    			err = params[i].ops->set(val, &params[i]);
+    		else
+    			err = -EPERM;
+    		kernel_param_unlock(params[i].mod);
+    		return err;
+    	}
+    }
+
+    if (handle_unknown) {
+    	pr_debug("doing %s: %s='%s'\n", doing, param, val);
+    	return handle_unknown(param, val, doing, arg);
+    }
+
+    pr_debug("Unknown argument '%s'\n", param);
+    return -ENOENT;
+
+}
+
+/_ Args looks like "foo=bar,bar2 baz=fuz wiz". _/
+char *parse_args(const char *doing,
+char *args,
+const struct kernel_param *params,
+unsigned num,
+s16 min_level,
+s16 max_level,
+void *arg,
+int (*unknown)(char *param, char *val,
+const char *doing, void *arg))
+{
+char *param, *val, \*err = NULL;
+
+    /* Chew leading spaces */
+    args = skip_spaces(args);
+
+    if (*args)
+    	pr_debug("doing %s, parsing ARGS: '%s'\n", doing, args);
+
+    while (*args) {
+    	int ret;
+    	int irq_was_disabled;
+
+    	args = next_arg(args, &param, &val);
+    	/* Stop at -- */
+    	if (!val && strcmp(param, "--") == 0)
+    		return err ?: args;
+    	irq_was_disabled = irqs_disabled();
+    	ret = parse_one(param, val, doing, params, num,
+    			min_level, max_level, arg, unknown);
+    	if (irq_was_disabled && !irqs_disabled())
+    		pr_warn("%s: option '%s' enabled irq's!\n",
+    			doing, param);
+
+````
+
+```C showLineNumber startLineNumber="215" notEnd
+}
+```
+
+`linux/kernel/params.c`의 `parse_args()` 함수 내부 184라인에서 `next_arg()` 함수를 호출하여 다음 파라미터를 가져옵니다. 그 다음 189라인에서 `parse_one()` 함수를 호출하여 파라미터를 해석합니다.
+
+`parse_one()` 함수에서는 131라인에서 모듈 파라미터를 순회합니다. 우리가 주목하는 `__setup()` 매크로로 설정한 `obs_kernel_param`은 대상이 아니며, 이는 152라인에서 핸들링합니다.
+
+```C fileName="init/main.c" showLineNumber startLineNumber="974" notEnd
+	after_dashes = parse_args("Booting kernel",
+				  static_command_line, __start___param,
+				  __stop___param - __start___param,
+				  -1, -1, NULL, &unknown_bootoption);
+```
+
+`parse_args()` 함수를 호출할 때 `unknown_bootoption()` 함수의 포인터를 넘겨줬는데, 이를 쭉 따라가보면 `parse_one()` 함수의 154라인에서 이를 실행하게 됩니다.
+
+```C fileName="init/main.c" highlights='{"sky":"13"}' showLineNumber startLineNumber="529" notEnd
+/*
+ * Unknown boot options get handed to init, unless they look like
+ * unused parameters (modprobe will find them in /proc/cmdline).
+ */
+static int __init unknown_bootoption(char *param, char *val,
+				     const char *unused, void *arg)
+{
+	size_t len = strlen(param);
+
+	repair_env_string(param, val);
+
+	/* Handle obsolete-style parameters */
+	if (obsolete_checksetup(param))
+		return 0;
+```
+
+이 `unknown_bootoption()` 함수 내부에서는 `obsolete_checksetup()` 함수를 실행합니다.
+
+```C fileName="init/main.c" highlights='{"pink":"21"}' showLineNumber startLineNumber="201" notEnd
+static bool __init obsolete_checksetup(char *line)
+{
+	const struct obs_kernel_param *p;
+	bool had_early_param = false;
+
+	p = __setup_start;
+	do {
+		int n = strlen(p->str);
+		if (parameqn(line, p->str, n)) {
+			if (p->early) {
+				/* Already done in parse_early_param?
+				 * (Needs exact match on param part).
+				 * Keep iterating, as we can have early
+				 * params and __setups of same names 8( */
+				if (line[n] == '\0' || line[n] == '=')
+					had_early_param = true;
+			} else if (!p->setup_func) {
+				pr_warn("Parameter %s is obsolete, ignored\n",
+					p->str);
+				return true;
+			} else if (p->setup_func(line + n))
+				return true;
+		}
+		p++;
+	} while (p < __setup_end);
+
+	return had_early_param;
+}
+```
+
+`obsolete_checksetup()` 함수에서는 `__setup_start`~`__setup_end`를 순회하며 `p->setup_func(line + n))`으로, `__setup()` 매크로에서 넘겨주었던 함수를 실행합니다.
+
+```C fileName="include/linux/init.h" showLineNumber startLineNumber="303" notEnd
+struct obs_kernel_param {
+	const char *str;
+	int (*setup_func)(char *);
+	int early;
+};
+```
+
+```C fileName="include/linux/init.h" highlights='{"red":"4"}' showLineNumber startLineNumber="315" notEnd
+#define __setup_param(str, unique_id, fn, early)			\
+	static const char __setup_str_##unique_id[] __initconst		\
+		__aligned(1) = str; 					\
+	static struct obs_kernel_param __setup_##unique_id		\
+		__used __section(".init.setup")				\
+		__aligned(__alignof__(struct obs_kernel_param))		\
+		= { __setup_str_##unique_id, fn, early }
+```
+
+구조체 `obs_kernel_param`과 매크로 `__setup_param()`의 정의를 다시 떠올려보면 이해가 쉽습니다.
+
+이번 글에서 `__setup()` 매크로에서 넘겨주었던 함수는 `disable_modeset()`이 되겠네요. `nomodeset`이 부팅 시 파라미터로 주어지면, `disable_modeset()` 함수를 실행하여 static 변수인 `drm_nomodeset`을 `true`로 설정하고, 이를 드라이버에서 드라이버 초기화 과정 중에 발견하여 드라이버 로드를 중단하는 것입니다.

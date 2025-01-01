@@ -1,0 +1,188 @@
+---
+title: "리눅스 부팅 멈춤 증상 해결법 한 가지"
+category: "리눅스"
+createdAt: 1691645584259
+description: "nomodeset 옵션으로 리눅스 부팅이 멈추는 증상을 해결해봅니다."
+updatedAt:
+  - 1691645584259
+  - 1693233582935
+  - 1693282972802
+tags:
+  - 리눅스
+categories:
+  - 리눅스
+titleId: solution-to-fix-boot-problem
+---
+
+![](./solution-to-fix-boot-problem/linux-2025130.svg)
+
+리눅스를 처음 설치, 혹은 업데이트했을 때 부팅이 멈춰버리는 경우를 경험해보셨을 것입니다. 이번 글에서는 이를 해결할 수 있는 방법 중 한가지를 소개해드리려 합니다.
+
+# `nomodeset`이란?
+
+    "The newest kernels have moved the video mode setting into the kernel. So all the programming of the hardware specific clock rates and registers on the video card happen in the kernel rather than in the X driver when the X server starts.. This makes it possible to have high resolution nice looking splash (boot) screens and flicker free transitions from boot splash to login screen. Unfortunately, on some cards this doesnt work properly and you end up with a black screen. Adding the nomodeset parameter instructs the kernel to not load video drivers and use BIOS modes instead until X is loaded."
+
+```txt fileName="linux/Documentation/admin-guide/kernel-parameters.txt"
+nomodeset 	  Disable kernel modesetting. Most systems' firmware
+              sets up a display mode and provides framebuffer memory
+              for output. With nomodeset, DRM and fbdev drivers will
+              not load if they could possibly displace the pre-
+              initialized output. Only the system framebuffer will
+              be available for use. The respective drivers will not
+              perform display-mode changes or accelerated rendering.
+```
+
+리눅스에서는 비디오 모드 세팅 역할을 커널이 가지고 있습니다. 그래서 그래픽 드라이버 대신 커널이 그래픽카드 제어를 담당합니다. 이렇게 하면 고해상도 부팅 스크린(splash)을 구현할 수 있고, 부팅 스크린에서 로그온 화면으로 넘어가는 과정을 깜빡임 없이 부드럽게 진행할 수 있습니다. 하지만 일부 그래픽카드에서는 제대로 작동하지 않는 문제가 있는데, 부팅이 도중에 멈춰버리기도 합니다.
+
+```grub showLineNumber skip="2,7" highlights='{"green":"5"}'
+cat /etc/default/grub
+ ...
+#   info -f grub -n 'Simple configuration'
+
+GRUB_DEFAULT="nomodeset"
+
+# ...
+```
+
+`nomodeset` 옵션을 `grub` 부트로더에 옵션으로 주면 이 역할을 `X`가 완전히 로드될 때까지 그래픽 드라이버가 로드되지 않도록 커널에 지시합니다.
+
+## `nomodeset`의 전달 경로
+
+```C showLineNumber fileName="linux/drivers/gpu/drm/drm_nomodeset.c" highlights='{"green":"6","yellow":"8-11","blue":"14-21","red":"24"}'
+// SPDX-License-Identifier: GPL-2.0
+
+#include <linux/module.h>
+#include <linux/types.h>
+
+static bool drm_nomodeset;
+
+bool drm_firmware_drivers_only(void)
+{
+	return drm_nomodeset;
+}
+EXPORT_SYMBOL(drm_firmware_drivers_only);
+
+static int __init disable_modeset(char *str)
+{
+	drm_nomodeset = true;
+
+	pr_warn("Booted with the nomodeset parameter. Only the system framebuffer will be available\n");
+
+	return 1;
+}
+
+/* Disable kernel modesetting */
+__setup("nomodeset", disable_modeset);
+```
+
+`nomodeset` 설정 값이 어떻게 실제로 적용되는지를 간단히 살펴보겠습니다.
+
+`drm_nomoeset.c`를 보면 <span style={{color:"#22c55e", fontWeight:"700"}}>6라인</span>에 `static bool` 타입 변수 `drm_nomodeset`이 존재합니다. 그리고 <span style={{color:"#ef4444", fontWeight:"700"}}>24라인</span>의 `__setup("nomodeset", disable_modeset)` 매크로는 부트로더가 넘겨준 부팅 parameter 중 `nomodeset`가 존재할 경우 <span style={{color:"#3b82f6", fontWeight:"700"}}>14라인</span>의 `disable_modeset()` 함수를 실행하도록 지시합니다. **`disable_nomodeset()` 함수는 앞선 static 변수 `drm_nomodeset`의 값을 `true`로 설정합니다.**
+
+    	DRM이란 <strong>Direct Rendering Manager</strong>의 약자로 GPU와의
+    	인터페이스 역할을 하며 리눅스 서브시스템(subsystem) 중 하나입니다.
+
+그래픽 드라이버는 이 `drm_nomodeset`의 값을 <span style={{color:"#eab308", fontWeight:"700"}}>8라인</span>의 `drm_firmware_drivers_only()` 함수를 통해 참조합니다.
+
+```C startLineNumber="147"
+int radeon_modeset = -1;
+```
+
+```C startLineNumber="630"
+static int __init radeon_module_init(void)
+{
+	if (drm_firmware_drivers_only() && radeon_modeset == -1)
+		radeon_modeset = 0;
+
+    if (radeon_modeset == 0)
+    	return -EINVAL;
+
+    DRM_INFO("radeon kernel modesetting enabled.\n");
+    radeon_register_atpx_handler();
+
+    return pci_register_driver(&radeon_kms_pci_driver);
+
+}
+
+```
+
+```C startLineNumber="651" notEnd
+module_init(radeon_module_init);
+```
+
+이번 글에서는 라데온 드라이버를 예로 들어보겠습니다. <span style={{color:"#ef4444", fontWeight:"700"}}>147라인</span>에서 `radeon_modeset`의 값은 `-1`로 지정되어 있는 상태입니다. <span style={{color:"#ec4899", fontWeight:"700"}}>632라인</span>에서 `drm_firmware_drivers_only()` 함수를 호출합니다. 만약 `nomodeset` 옵션이 붙여져 있었다면, 이 함수가 `true`를 반환할 것입니다. 이때 `radeon_nomodeset`의 값이 `0`이 되므로, <span style={{color:"#0ea5e9", fontWeight:"700"}}>635라인</span>에 의해 <span style={{color:"#f59e0b", fontWeight:"700"}}>651라인</span>이 지시했던 드라이버 로드 과정을 종료시켜버립니다. <span style={{color:"#f59e0b", fontWeight:"700"}}>651라인</span>의 `module_init()` 매크로는 커널 모듈을 등록하는 역할이었습니다.
+
+# `nomodeset` 옵션을 이용해 리눅스 설치하기
+
+`nomodeset` 옵션을 붙이면 부팅 과정이 끝날 때까지 그래픽 드라이버 사용이 중지됩니다. 따라서 호환성 문제가 있을 때 유용하게 사용할 수 있습니다. 이번에는 실제로 `nomodeset` 옵션을 사용해보겠습니다.
+
+## 설치 미디어로 부팅
+
+![](./solution-to-fix-boot-problem/init.png)
+
+설치 미디어로 부팅을 시도하면 위와 같이 GRUB 부트로더가 나타날 것입니다. 여기서 **Try or Install Ubuntu (Server)** 옵션에 커서를 위치시킨 뒤, `e` 키를 누릅니다.
+
+![](./solution-to-fix-boot-problem/first-grub-before-edit.png)
+
+그러면 위와 같이 부팅 파라미터를 세팅할 수 있는 화면이 나타납니다.
+
+![](./solution-to-fix-boot-problem/first-grub-after-edit.png)
+
+여기서 `linux`가 적혀있는 라인으로 간 뒤, **` ---`을 없애고 `nomodeset`으로 대체합니다.** 그 후 `Ctrl + x`나 `F10`을 눌러 해당 설정으로 부팅합니다.
+
+![](./solution-to-fix-boot-problem/install-start.png)
+
+이제 자유롭게 리눅스 설치를 진행합니다.
+
+## 설치 완료 후 첫 부팅
+
+이제 시스템에 따라 재부팅 후 먹통이 되는 경우가 있을 것입니다.
+
+메인보드 로고, 혹은 POST가 뜬 직후 `Esc`를 누르거나 `Shift`를 누르고 있으세요.
+
+
+		시스템에 따라 <code>Esc</code>를 누르면 UEFI Setup으로 진입할 수 있습니다.
+		이 때는 UEFI Setup에서 Boot Override 기능을 이용해 재부팅하여 다시
+		시도하거나, <code>Shift</code>를 사용하세요.
+
+
+![](./solution-to-fix-boot-problem/second-boot.png)
+
+이제 시스템에 정식으로 설치된 GRUB이 나타납니다. 여기서 **Ubuntu**에 커서를 맞춘 뒤 마찬가지로 `e`키를 누르세요.
+
+![](./solution-to-fix-boot-problem/second-boot-before-edit.png)
+여기서도 마찬가지로 `linux`가 있는 라인을 찾습니다.
+
+![](./solution-to-fix-boot-problem/second-boot-after-edit.png)
+
+이제 마지막 파라미터 뒤에 `nomodeset` 파라미터를 붙입니다. 마찬가지로 `Ctrl + x`나 `F10`을 눌러 부팅을 진행합니다.
+
+![](./solution-to-fix-boot-problem/boot-success.png)
+
+정상적으로 부팅이 진행되는 모습입니다.
+
+이제 GRUB 세팅을 바꿀 차례입니다.
+
+```Bash
+$ sudo nano /etc/default/grub
+```
+
+![](./solution-to-fix-boot-problem/in-grub-before-edit.png)
+
+여기서 손 볼 것은 `GRUB_CMDLINE_LINUX_DEFAULT` 부분입니다.
+
+![](./solution-to-fix-boot-problem/in-grub-after-edit.png)
+
+`GRUB_CMDLINE_LINUX_DEFAULT`의 맨 마지막에 `nomodeset`을 붙여주세요.
+
+이후 저장하고 빠져나옵니다.
+
+![](./solution-to-fix-boot-problem/sudo-update-grub.png)
+
+```Bash
+$ sudo update-grub
+```
+
+이제 GRUB 설정을 업데이트합니다.
+
+여기까지입니다. 이제 기본적으로 부팅 시에 아무 것도 건들지 않아도 `nomodeset` 옵션이 붙은 채로 부팅이 진행될 것입니다.
