@@ -36,11 +36,13 @@ export default async function Img({ src: _src, alt, width }: ImgProps) {
 
   // TODO: add lazy loading
   return (
-    <img
-      src={dataUrl}
-      alt={alt}
-      width={imageSize.width}
-      height={imageSize.height}
-    />
+    <div className="flex w-full flex-row justify-center">
+      <img
+        src={dataUrl}
+        alt={alt}
+        width={imageSize.width}
+        height={imageSize.height}
+      />
+    </div>
   );
 }

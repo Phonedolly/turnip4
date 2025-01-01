@@ -4,7 +4,7 @@ import Link from "next/link";
 
 const Title = ({ title }: { title: string }) => {
   return (
-    <p className="text-xl group-hover:text-primary font-bold tracking-tight text-foreground lg:text-2xl lg:leading-tight">
+    <p className="text-xl font-bold tracking-tight text-foreground group-hover:text-primary lg:text-2xl lg:leading-tight">
       {title}
     </p>
   );
@@ -12,7 +12,7 @@ const Title = ({ title }: { title: string }) => {
 
 const Description = ({ description }: { description: string }) => {
   return (
-    <p className="group-hover:text-primary text-base font-normal tracking-tight text-foreground md:text-lg lg:text-lg">
+    <p className="text-base font-normal tracking-tight text-foreground group-hover:text-primary md:text-lg lg:text-lg">
       {description}
     </p>
   );
@@ -20,8 +20,16 @@ const Description = ({ description }: { description: string }) => {
 
 const CreatedAt = ({ createdAt }: { createdAt: number }) => {
   return (
-    <p className="text-sm group-hover:text-primary text-foreground">
+    <p className="text-sm text-foreground font-semibold group-hover:text-primary">
       {epochToDateString(createdAt)}
+    </p>
+  );
+};
+
+const ReadingTime = ({ readingTime }: { readingTime: number }) => {
+  return (
+    <p className="text-sm font-medium text-neutral-500">
+      읽는 시간 {Math.floor(readingTime)}분
     </p>
   );
 };
@@ -39,7 +47,10 @@ export default function PostCard({
       <Title title={frontmatter.title} />
       <div className="flex flex-col">
         <Description description={frontmatter.description} />
-        <CreatedAt createdAt={frontmatter.createdAt} />
+        <div className="flex flex-row gap-x-2">
+          <CreatedAt createdAt={frontmatter.createdAt} />
+          <ReadingTime readingTime={frontmatter.readingTime} />
+        </div>
       </div>
     </Link>
   );

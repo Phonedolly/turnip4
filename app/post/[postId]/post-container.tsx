@@ -13,7 +13,7 @@ type UpdateDateProps = {
 
 const Title = ({ title }: { title: string }) => {
   return (
-    <h1 className="py-0.5 font-geist text-3xl font-bold tracking-tight text-foreground lg:text-4xl">
+    <h1 className="py-0.5 text-3xl font-bold tracking-tight text-foreground lg:text-4xl">
       {title}
     </h1>
   );
@@ -21,7 +21,7 @@ const Title = ({ title }: { title: string }) => {
 
 const Description = ({ description }: { description: string }) => {
   return (
-    <p className="font-geist text-xl font-normal tracking-tighter text-foreground md:text-2xl lg:text-2xl">
+    <p className="text-xl font-normal tracking-tighter text-foreground md:text-2xl lg:text-2xl">
       {description}
     </p>
   );
@@ -33,11 +33,11 @@ const UpdateDate = ({ createdAt, updatedAt }: UpdateDateProps) => {
 
   return (
     <div className="flex w-1/2 max-w-fit flex-col border-b border-foreground">
-      <p className="font-geist text-sm font-normal tracking-tight text-foreground sm:text-base">
+      <p className="text-sm font-normal tracking-tight text-foreground sm:text-base">
         {createdDate}에 작성
       </p>
       <div className="flex w-fit flex-col">
-        <p className="font-geist text-sm font-normal tracking-tight text-foreground sm:text-base">
+        <p className="text-sm font-normal tracking-tight text-foreground sm:text-base">
           {updatedDate}에 업데이트
         </p>
         {/* <Divider /> */}
