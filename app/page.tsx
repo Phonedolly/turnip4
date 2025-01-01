@@ -1,9 +1,9 @@
+import PostList from "@/components/post-list";
+
 export default function Home() {
   return (
-    <div className="">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <h1 className="text-4xl font-bold">안녕하세요 처음입니다.</h1>
-      </main>
-    </div>
+    <main className="flex w-full flex-col items-center gap-y-8 py-2">
+      <PostList />
+    </main>
   );
 }
