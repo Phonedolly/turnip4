@@ -37,16 +37,16 @@ export default function RootLayout({
           `antialiased`,
           geistMono.variable,
           geist.variable,
-          "font-geist bg-background text-foreground",
+          "bg-background font-geist text-foreground",
         )}
       >
         <div
           className={cn(
-            "flex flex-col items-center justify-center",
-            "mx-auto my-6 gap-y-2 px-5",
+            "flex w-full flex-col items-center justify-center",
+            "my-6 gap-y-2 px-5",
             "sm:my-8 sm:gap-y-4 sm:px-12",
             "max-w-screen-lg md:my-16 md:gap-y-3.5 md:px-12",
-            // "lg:mx-12 lg:my-12"
+            "selection:bg-bone-500 selection:text-foreground",
           )}
         >
           <Header />
