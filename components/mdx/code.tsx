@@ -1,5 +1,3 @@
-"use client";
-
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { gruvboxDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 
@@ -19,16 +17,17 @@ export default function Code(props: {
     wrapLongLines,
     language,
   } = props;
-  const match = /language-(\w+)/.exec(className || "");
-
+  const match = /language-(\w+)/
+    .exec(className || "")
+    ?.map((m) => m.trim().toLowerCase());
   if (match) {
     return (
       <SyntaxHighlighter
         PreTag="div"
-        language={language || match[1]}
+        language={language ?? match[1]}
         style={gruvboxDark}
         codeTagProps={{
-          className: "font-geist-mono text-sm sm:text-base",
+          className: "font-geist-mono text-sm sm:text-sm",
         }}
         wrapLines={wrapLines ?? true}
         showLineNumbers={showLineNumbers ?? false}
@@ -40,7 +39,7 @@ export default function Code(props: {
   }
 
   return (
-    <code className="rounded-md font-[470] tracking-[-0.028em] bg-bone-200 px-1.5 py-0.5 font-geist-mono text-sm text-foreground sm:text-base dark:bg-bone-800">
+    <code className="rounded-md bg-bone-200 px-1.5 py-0.5 font-geist-mono font-[470] tracking-[-0.028em] text-foreground hover:bg-bone-100 sm:text-base dark:bg-bone-800">
       {children}
     </code>
   );

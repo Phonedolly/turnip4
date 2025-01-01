@@ -12,14 +12,16 @@ const Title = ({ title }: { title: string }) => {
 
 const Description = ({ description }: { description: string }) => {
   return (
-    <p className="text-xl font-normal tracking-tighter text-foreground md:text-2xl lg:text-2xl">
+    <p className="text-base font-normal tracking-tighter text-foreground md:text-lg lg:text-lg">
       {description}
     </p>
   );
 };
 
 const CreatedAt = ({ createdAt }: { createdAt: number }) => {
-  return <p>{epochToDateString(createdAt)}</p>;
+  return (
+    <p className="text-sm text-foreground">{epochToDateString(createdAt)}</p>
+  );
 };
 
 export default function PostCard({
@@ -33,7 +35,7 @@ export default function PostCard({
       className="flex flex-col gap-y-1 hover:underline"
     >
       <Title title={frontmatter.title} />
-      <div className="flex flex-col gap-y-0.5">
+      <div className="flex flex-col">
         <Description description={frontmatter.description} />
         <CreatedAt createdAt={frontmatter.createdAt} />
       </div>

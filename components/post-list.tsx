@@ -24,7 +24,7 @@ export default async function PostList() {
       (post) => post.frontmatter !== null && post.frontmatter !== undefined,
     )
     .sort((a, b) => {
-      return a.frontmatter.createdAt - b.frontmatter.createdAt;
+      return b.frontmatter.createdAt - a.frontmatter.createdAt;
     });
 
   return (

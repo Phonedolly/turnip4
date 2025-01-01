@@ -1,4 +1,5 @@
-import Image from "next/image";
+import fs from "fs/promises";
+import probe from "probe-image-size";
 
 type ProportionalWidth = number;
 function isProportionalWidth(width?: number): width is ProportionalWidth {
@@ -17,9 +18,29 @@ type ImgProps = {
   width?: ProportionalWidth;
 };
 
-export default function Img({ src, alt, width }: ImgProps) {
-  if (isProportionalWidth(width) !== true) {
+export default async function Img({ src: _src, alt, width }: ImgProps) {
+  if (width && isProportionalWidth(width) !== true) {
     throw new Error("Invalid width");
   }
-  return <Image src={src} alt={alt} />;
+  const pathName = _src.split("/")[1];
+  const imageName = _src.split("/")[2];
+
+  const imageData = await fs.readFile(
+    `${process.cwd()}/posts/${pathName}/${imageName}`,
+  );
+  const imageSize = probe.sync(imageData);
+  if (imageSize === null) {
+    throw new Error(`[Img] ${imageName} is invalid or not an image`);
+  }
+  const dataUrl = `data:${imageSize.mime};base64,${imageData.toString("base64")}`;
+
+  // TODO: add lazy loading
+  return (
+    <img
+      src={dataUrl}
+      alt={alt}
+      width={imageSize.width}
+      height={imageSize.height}
+    />
+  );
 }
