@@ -1,7 +1,7 @@
 import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
-
+import readingTime from "reading-time";
 /**
  * @description append current timestamp to updatedAt array of frontmatter. argument is target mdx file path
  * @example
@@ -17,6 +17,9 @@ const update = async () => {
   const targetMdxPath = path.resolve(process.cwd(), process.argv[2]);
   const fileContent = fs.readFileSync(targetMdxPath, "utf-8");
   const { content, data: frontmatter } = matter(fileContent);
+
+  const time = readingTime(content);
+  frontmatter.readingTime = time.minutes;
 
   frontmatter.updatedAt.push(Date.now());
 

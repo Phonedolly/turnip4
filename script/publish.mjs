@@ -1,6 +1,7 @@
 import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
+import readingTime from "reading-time";
 
 /**
  * @description write or update the createdAt of mdx file to posts directory. if
@@ -19,6 +20,9 @@ const publish = async () => {
   const targetMdxPath = path.resolve(process.cwd(), process.argv[2]);
   const fileContent = fs.readFileSync(targetMdxPath, "utf-8");
   const { content, data: frontmatter } = matter(fileContent);
+
+  const time = readingTime(content);
+  frontmatter.readingTime = time.minutes;
 
   const now = Date.now();
   frontmatter.createdAt = now;
