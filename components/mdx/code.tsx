@@ -40,7 +40,7 @@ export default function Code(props: {
   }
 
   return (
-    <code className="rounded-md bg-bone-200 px-1.5 py-0.5 font-geist-mono text-sm text-foreground sm:text-base dark:bg-bone-800">
+    <code className="rounded-md font-[470] tracking-[-0.028em] bg-bone-200 px-1.5 py-0.5 font-geist-mono text-sm text-foreground sm:text-base dark:bg-bone-800">
       {children}
     </code>
   );

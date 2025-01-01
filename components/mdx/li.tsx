@@ -1,7 +1,9 @@
+// import "./li.css";
+
 export default function LI({ children }: { children: React.ReactNode }) {
   return (
-    <li className="text-base sm:text-lg leading-relaxed">
+    <li className="list-none text-base leading-relaxed before:mr-2 before:content-['-'] sm:text-lg">
       {children}
     </li>
   );
-} 
+}

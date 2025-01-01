@@ -1,12 +1,18 @@
-export default function A({ children, href }: { children: React.ReactNode; href?: string }) {
+export default function A({
+  children,
+  href,
+}: {
+  children: React.ReactNode;
+  href?: string;
+}) {
   return (
-    <a 
-      href={href} 
-      className="text-foreground hover:text-primary hover:underline decoration-2 underline-offset-2"
+    <a
+      href={href}
+      className="tracking-tight text-foreground text-primary underline underline-offset-[2px] hover:decoration-2 hover:underline-offset-[2px]"
       target="_blank"
       rel="noopener noreferrer"
     >
       {children}
     </a>
   );
-} 
+}
