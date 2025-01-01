@@ -17,8 +17,7 @@ const update = async () => {
   const targetMdxPath = path.resolve(process.cwd(), process.argv[2]);
   const fileContent = fs.readFileSync(targetMdxPath, "utf-8");
   const { content, data: frontmatter } = matter(fileContent);
-  console.dir(frontmatter, { depth: null });
-  console.dir(content, { depth: null });
+
   frontmatter.updatedAt.push(Date.now());
 
   const updatedContent = matter.stringify(content, frontmatter);
