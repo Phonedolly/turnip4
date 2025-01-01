@@ -4,7 +4,7 @@ import Link from "next/link";
 
 const Title = ({ title }: { title: string }) => {
   return (
-    <p className="text-2xl font-bold tracking-tight text-foreground lg:text-3xl lg:leading-tight">
+    <p className="text-xl group-hover:text-primary font-bold tracking-tight text-foreground lg:text-2xl lg:leading-tight">
       {title}
     </p>
   );
@@ -12,7 +12,7 @@ const Title = ({ title }: { title: string }) => {
 
 const Description = ({ description }: { description: string }) => {
   return (
-    <p className="text-base font-normal tracking-tighter text-foreground md:text-lg lg:text-lg">
+    <p className="group-hover:text-primary text-base font-normal tracking-tight text-foreground md:text-lg lg:text-lg">
       {description}
     </p>
   );
@@ -20,7 +20,9 @@ const Description = ({ description }: { description: string }) => {
 
 const CreatedAt = ({ createdAt }: { createdAt: number }) => {
   return (
-    <p className="text-sm text-foreground">{epochToDateString(createdAt)}</p>
+    <p className="text-sm group-hover:text-primary text-foreground">
+      {epochToDateString(createdAt)}
+    </p>
   );
 };
 
@@ -32,7 +34,7 @@ export default function PostCard({
   return (
     <Link
       href={`/post/${frontmatter.titleId}`}
-      className="flex flex-col gap-y-1 hover:underline"
+      className="group flex flex-col gap-y-1"
     >
       <Title title={frontmatter.title} />
       <div className="flex flex-col">

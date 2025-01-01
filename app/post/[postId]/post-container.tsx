@@ -67,12 +67,12 @@ export default async function PostContainer({
   const { title } = await frontmatter;
 
   return (
-    <div className="relative flex w-full flex-col gap-y-0 md:gap-y-1.5 md:py-1">
+    <div className="relative flex w-full flex-col gap-y-2 md:gap-y-4 md:py-1 lg:gap-y-6">
       <div className="flex flex-col gap-y-0 md:gap-y-0.5">
         <Title title={title} />
         <Info frontmatter={await frontmatter} />
       </div>
-      {children}
+      <div>{children}</div>
     </div>
   );
 }

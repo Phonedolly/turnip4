@@ -1,4 +1,6 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# turnip4
+
+Source code of my blog, [startdue128](https://startdue128.com).
 
 ## Getting Started
 
