@@ -1,6 +1,5 @@
 import { globby } from "globby";
 
-import { IFrontmatter } from "@/types/IFrontmatter";
 
 import PostCard from "./post-card";
 
