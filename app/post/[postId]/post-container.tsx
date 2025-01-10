@@ -1,4 +1,5 @@
 import { epochToDateString } from "@/lib/epoch-to-datestring";
+import { IFrontmatter } from "@/types/IFrontmatter";
 
 type ContainerProps = {
   children: React.ReactNode;

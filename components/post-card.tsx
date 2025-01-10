@@ -1,4 +1,5 @@
 import { epochToDateString } from "@/lib/epoch-to-datestring";
+import { IFrontmatter } from "@/types/IFrontmatter";
 import Link from "next/link";
 
 const Title = ({ title }: { title: string }) => {
