@@ -16,7 +16,7 @@ titleId: solution-to-fix-boot-problem
 readingTime: 7.74
 ---
 
-![](./solution-to-fix-boot-problem/linux-2025130.svg)
+![](./linux-2025130.svg)
 
 리눅스를 처음 설치, 혹은 업데이트했을 때 부팅이 멈춰버리는 경우를 경험해보셨을 것입니다. 이번 글에서는 이를 해결할 수 있는 방법 중 한가지를 소개해드리려 합니다.
 
@@ -120,19 +120,19 @@ module_init(radeon_module_init);
 
 ## 설치 미디어로 부팅
 
-![](./solution-to-fix-boot-problem/init.png)
+![](./init.png)
 
 설치 미디어로 부팅을 시도하면 위와 같이 GRUB 부트로더가 나타날 것입니다. 여기서 **Try or Install Ubuntu (Server)** 옵션에 커서를 위치시킨 뒤, `e` 키를 누릅니다.
 
-![](./solution-to-fix-boot-problem/first-grub-before-edit.png)
+![](./first-grub-before-edit.png)
 
 그러면 위와 같이 부팅 파라미터를 세팅할 수 있는 화면이 나타납니다.
 
-![](./solution-to-fix-boot-problem/first-grub-after-edit.png)
+![](./first-grub-after-edit.png)
 
 여기서 `linux`가 적혀있는 라인으로 간 뒤, **` ---`을 없애고 `nomodeset`으로 대체합니다.** 그 후 `Ctrl + x`나 `F10`을 눌러 해당 설정으로 부팅합니다.
 
-![](./solution-to-fix-boot-problem/install-start.png)
+![](./install-start.png)
 
 이제 자유롭게 리눅스 설치를 진행합니다.
 
@@ -148,18 +148,18 @@ module_init(radeon_module_init);
 		시도하거나, <code>Shift</code>를 사용하세요.
 
 
-![](./solution-to-fix-boot-problem/second-boot.png)
+![](./second-boot.png)
 
 이제 시스템에 정식으로 설치된 GRUB이 나타납니다. 여기서 **Ubuntu**에 커서를 맞춘 뒤 마찬가지로 `e`키를 누르세요.
 
-![](./solution-to-fix-boot-problem/second-boot-before-edit.png)
+![](./second-boot-before-edit.png)
 여기서도 마찬가지로 `linux`가 있는 라인을 찾습니다.
 
-![](./solution-to-fix-boot-problem/second-boot-after-edit.png)
+![](./second-boot-after-edit.png)
 
 이제 마지막 파라미터 뒤에 `nomodeset` 파라미터를 붙입니다. 마찬가지로 `Ctrl + x`나 `F10`을 눌러 부팅을 진행합니다.
 
-![](./solution-to-fix-boot-problem/boot-success.png)
+![](./boot-success.png)
 
 정상적으로 부팅이 진행되는 모습입니다.
 
@@ -169,17 +169,17 @@ module_init(radeon_module_init);
 $ sudo nano /etc/default/grub
 ```
 
-![](./solution-to-fix-boot-problem/in-grub-before-edit.png)
+![](./in-grub-before-edit.png)
 
 여기서 손 볼 것은 `GRUB_CMDLINE_LINUX_DEFAULT` 부분입니다.
 
-![](./solution-to-fix-boot-problem/in-grub-after-edit.png)
+![](./in-grub-after-edit.png)
 
 `GRUB_CMDLINE_LINUX_DEFAULT`의 맨 마지막에 `nomodeset`을 붙여주세요.
 
 이후 저장하고 빠져나옵니다.
 
-![](./solution-to-fix-boot-problem/sudo-update-grub.png)
+![](./sudo-update-grub.png)
 
 ```Bash
 $ sudo update-grub
