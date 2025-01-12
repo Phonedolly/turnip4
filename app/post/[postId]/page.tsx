@@ -24,9 +24,11 @@ export default async function Page({ params }: PostPageProps) {
 
 export async function generateStaticParams() {
   const posts = await fs.readdir(path.join(process.cwd(), "posts"));
-  return posts.map((post) => ({
-    postId: post.replace(/\.mdx$/, ""),
-  }));
+  return posts
+    .filter((post) => !post.includes(".obsidian"))
+    .map((post) => ({
+      postId: post.replace(/\.mdx$/, ""),
+    }));
 }
 
 export const dynamicParams = false;
