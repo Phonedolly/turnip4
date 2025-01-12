@@ -1,21 +1,6 @@
 import fs from "fs";
 import path from "path";
 
-const DEFAULT_FRONTMATTER = `---
-title: 
-description: 
-tags:
-  - 
-categories:
-  - 
-titleId: 
-readingTime: 0
-createdAt: ${Date.now()}
-updatedAt:
-  - ${Date.now()}
----
-`;
-
 /**
  * @description initialize mdx file with frontmatter
  * @example
@@ -36,9 +21,22 @@ const init = async () => {
 
   const targetMdxPath = path.resolve(targetDir, `${postId}.mdx`);
 
-  const frontmatter = DEFAULT_FRONTMATTER;
+  const DEFAULT_FRONTMATTER = `---
+title: 
+description: 
+tags:
+  - 
+categories:
+  - 
+titleId: ${postId}
+readingTime: 0
+createdAt: ${Date.now()}
+updatedAt:
+  - ${Date.now()}
+---
+`;
 
-  fs.writeFileSync(targetMdxPath, frontmatter + "\n\n");
+  fs.writeFileSync(targetMdxPath, DEFAULT_FRONTMATTER);
 };
 
 init().catch(console.error);
