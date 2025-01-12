@@ -22,27 +22,6 @@ const pretendard = localFont({
   src: "../fonts/PretendardVariable.woff2",
   variable: "--font-pretendard",
 });
-
-const lineSeed = localFont({
-  src: [
-    {
-      path: "../fonts/LineSeedKR-Th.woff2",
-      weight: "300",
-      style: "normal",
-    },
-    {
-      path: "../fonts/LineSeedKR-Rg.woff2",
-      weight: "400",
-      style: "normal",
-    },
-    {
-      path: "../fonts/LineSeedKR-Bd.woff2",
-      weight: "700",
-      style: "normal",
-    },
-  ],
-  variable: "--font-line-seed",
-});
 // const geist = Geist({
 //   subsets: ["latin-ext"],
 //   weight: "variable",
@@ -61,10 +40,9 @@ export default function RootLayout({
         className={cn(
           `antialiased`,
           geistMono.variable,
-          // pretendard.variable,
-          lineSeed.variable,
+          pretendard.variable,
           // geist.variable,
-          "font-lineSeed bg-background text-foreground",
+          "font-pretendard bg-background text-foreground",
         )}
       >
         <div
