@@ -6,7 +6,7 @@ import readingTime from "reading-time";
  * @description append current timestamp to updatedAt array of frontmatter. argument is target mdx file path
  * @example
  * ```bash
- * npm run update-post posts/read-me.mdx
+ * npm run update-post [post-id]
  * ```
  */
 const update = async () => {
@@ -14,7 +14,12 @@ const update = async () => {
     throw new Error("Please provide a target path");
   }
 
-  const targetMdxPath = path.resolve(process.cwd(), process.argv[2]);
+  const postId = process.argv[2];
+
+  const targetMdxPath = path.resolve(
+    process.cwd(),
+    `posts/${postId}/${postId}.mdx`,
+  );
   const fileContent = fs.readFileSync(targetMdxPath, "utf-8");
   const { content, data: frontmatter } = matter(fileContent);
 

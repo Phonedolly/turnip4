@@ -9,7 +9,7 @@ import readingTime from "reading-time";
  * be cleared to current timestamp (equal to (new) createdAt)
  * @example
  * ```bash
- * npm run publish posts/read-me.mdx
+ * npm run publish [post-id]
  * ```
  */
 const publish = async () => {
@@ -17,7 +17,9 @@ const publish = async () => {
     throw new Error("Please provide a target path");
   }
 
-  const targetMdxPath = path.resolve(process.cwd(), process.argv[2]);
+  const postId = process.argv[2];
+
+  const targetMdxPath = path.resolve(process.cwd(), `posts/${postId}/${postId}.mdx`);
   const fileContent = fs.readFileSync(targetMdxPath, "utf-8");
   const { content, data: frontmatter } = matter(fileContent);
 
