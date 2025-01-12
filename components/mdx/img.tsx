@@ -13,7 +13,7 @@ export default async function Img({ src, alt }: ImgProps) {
   const imageName = src.split("/")[3];
 
   const imageStream = fs.createReadStream(
-    path.join(process.cwd(), `posts/${postId}/${imageName}`),
+    path.join(process.cwd(), "posts", postId, imageName),
   );
   const { width, height, mime } = await probe(imageStream);
   const imageBuffer = fs.readFileSync(
