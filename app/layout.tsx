@@ -51,7 +51,7 @@ export default function RootLayout({
             "my-6 gap-y-2 px-5",
             "sm:my-8 sm:gap-y-4 sm:px-12",
             "max-w-screen-lg md:my-16 md:gap-y-3.5 md:px-20",
-            "selection:bg-bone-500 selection:text-foreground",
+            "selection:bg-bone-400 selection:text-foreground",
           )}
         >
           <Header />
