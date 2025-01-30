@@ -49,8 +49,8 @@ export default function RootLayout({
           className={cn(
             "mx-auto flex w-full flex-col items-center justify-center",
             "my-6 gap-y-2 px-5",
-            "sm:my-8 sm:gap-y-4 sm:px-12",
-            "max-w-screen-lg md:my-16 md:gap-y-3.5 md:px-20",
+            "sm:my-8 sm:gap-y-4 sm:px-16",
+            "max-w-screen-lg md:my-16 md:gap-y-3.5 md:px-36",
             "selection:bg-bone-400 selection:text-foreground",
           )}
         >
