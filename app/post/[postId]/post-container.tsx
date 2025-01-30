@@ -21,7 +21,7 @@ const Title = ({ title }: { title: string }) => {
 
 const Description = ({ description }: { description: string }) => {
   return (
-    <p className="text-xl font-normal tracking-tighter text-foreground md:text-2xl lg:text-2xl">
+    <p className="text-xl font-normal tracking-tight text-foreground md:text-2xl lg:text-2xl">
       {description}
     </p>
   );
