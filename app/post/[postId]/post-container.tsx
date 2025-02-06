@@ -13,7 +13,7 @@ type UpdateDateProps = {
 
 const Title = ({ title }: { title: string }) => {
   return (
-    <h1 className="py-0.5 text-3xl font-bold tracking-tight text-foreground lg:text-4xl">
+    <h1 className="py-0.5 text-3xl font-bold text-foreground lg:text-4xl">
       {title}
     </h1>
   );
@@ -21,7 +21,7 @@ const Title = ({ title }: { title: string }) => {
 
 const Description = ({ description }: { description: string }) => {
   return (
-    <p className="text-xl font-normal tracking-tight text-foreground md:text-2xl lg:text-2xl">
+    <p className="text-xl font-normal text-foreground md:text-2xl lg:text-2xl">
       {description}
     </p>
   );
