@@ -1,6 +1,10 @@
 import { Children } from "react";
 
 export default function P({ children }: { children: React.ReactNode }) {
+  /* if it contains only one child AND it's not a text node, it may be block element */
+  const isBlock =
+    Children.toArray(children).length === 1 &&
+    typeof children !== "string";
 
   if (isBlock) {
     return (
