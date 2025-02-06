@@ -11,15 +11,18 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        // "sd-minburi": ["Sandoll GothicNeo1Uni TTF", "sans-serif"],
-        // "sandoll-gothicneo-uni": ["Sandoll GothicNeo1Uni TTF", "sans-serif"],
-        pretendard: ["var(--font-pretendard)", "sans-serif"],
-        // "geist": ["var(--font-geist)", "sans-serif"],
-        "geist-mono": ["var(--font-geist-mono)", "monospace"],
-        "font-primary": [
+        pretendard: [
+          "var(--font-geist)",
           "var(--font-pretendard)",
           "sans-serif",
         ],
+        "fourty-two-dot-sans": [
+          "var(--font-fourty-two-dot-sans)",
+          "sans-serif",
+        ],
+        geist: ["var(--font-geist)", "sans-serif"],
+        "geist-mono": ["var(--font-geist-mono)", "monospace"],
+        "font-primary": ["var(--font-pretendard)", "sans-serif"],
       },
       /* from https://colorhunt.co/palette/2135553e5879d8c4b6f5efe7 */
       colors: {

@@ -1,10 +1,9 @@
 import type { Metadata } from "next";
 import "./globals.css";
 
-import { Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono } from "next/font/google";
 import localFont from "next/font/local";
 
-// import localFont from "next/font/local";
 import Header from "@/components/header";
 import { cn } from "@/lib/utils";
 
@@ -18,16 +17,18 @@ const geistMono = Geist_Mono({
   weight: "variable",
   variable: "--font-geist-mono",
 });
-const pretendard = localFont({
-  src: "../fonts/PretendardVariable.woff2",
-  variable: "--font-pretendard",
+
+const fourtyTwoDotSans = localFont({
+  src: "../fonts/42dotSans-VariableFont_wght.woff2",
+  variable: "--font-fourty-two-dot-sans",
+  weight: "variable",
 });
-// const geist = Geist({
-//   subsets: ["latin-ext"],
-//   weight: "variable",
-//   variable: "--font-geist",
-//   fallback: ["SD November"],
-// });
+
+const geist = Geist({
+  subsets: ["latin-ext"],
+  weight: "variable",
+  variable: "--font-geist",
+});
 
 export default function RootLayout({
   children,
@@ -40,9 +41,9 @@ export default function RootLayout({
         className={cn(
           `antialiased`,
           geistMono.variable,
-          pretendard.variable,
-          // geist.variable,
-          "font-pretendard bg-background text-foreground",
+          fourtyTwoDotSans.variable,
+          geist.variable,
+          "font-fourty-two-dot-sans bg-background text-foreground",
         )}
       >
         <div
