@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inconsolata, Roboto } from "next/font/google";
 import localFont from "next/font/local";
 
 import Header from "@/components/header";
@@ -12,22 +12,22 @@ export const metadata: Metadata = {
   description: "정성을 다해 작성합니다",
 };
 
-const geistMono = Geist_Mono({
+const roboto = Roboto({
   subsets: ["latin-ext"],
-  weight: "variable",
-  variable: "--font-geist-mono",
+  weight: ["400", "500", "700"],
+  variable: "--font-roboto",
 });
 
-const fourtyTwoDotSans = localFont({
-  src: "../fonts/42dotSans-VariableFont_wght.woff2",
-  variable: "--font-fourty-two-dot-sans",
+const pretendard = localFont({
+  src: "../fonts/PretendardVariable.woff2",
+  variable: "--font-pretendard",
   weight: "variable",
 });
 
-const geist = Geist({
+const inconsolata = Inconsolata({
   subsets: ["latin-ext"],
   weight: "variable",
-  variable: "--font-geist",
+  variable: "--font-inconsolata",
 });
 
 export default function RootLayout({
@@ -40,10 +40,10 @@ export default function RootLayout({
       <body
         className={cn(
           `antialiased`,
-          geistMono.variable,
-          fourtyTwoDotSans.variable,
-          geist.variable,
-          "font-fourty-two-dot-sans bg-background text-foreground",
+          roboto.variable,
+          pretendard.variable,
+          inconsolata.variable,
+          "font-roboto bg-background text-foreground",
         )}
       >
         <div

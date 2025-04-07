@@ -11,18 +11,15 @@ export default {
   theme: {
     extend: {
       fontFamily: {
+        roboto: ["var(--font-roboto)", "sans-serif"],
         pretendard: [
-          "var(--font-geist)",
+          "var(--font-roboto)",
           "var(--font-pretendard)",
           "sans-serif",
         ],
-        "fourty-two-dot-sans": [
-          "var(--font-fourty-two-dot-sans)",
-          "sans-serif",
-        ],
-        geist: ["var(--font-geist)", "sans-serif"],
-        "geist-mono": ["var(--font-geist-mono)", "monospace"],
+        inconsolata: ["var(--font-inconsolata)", "monospace"],
         "font-primary": ["var(--font-pretendard)", "sans-serif"],
+        "font-mono": ["var(--font-inconsolata)", "monospace"],
       },
       /* from https://colorhunt.co/palette/2135553e5879d8c4b6f5efe7 */
       colors: {
