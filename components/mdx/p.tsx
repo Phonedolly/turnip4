@@ -23,6 +23,6 @@ export default function P({ children, parentComponent }: PProps) {
     );
   }
   return (
-    <p className="mt-2 text-base leading-loose text-foreground">{children}</p>
+    <p className="mt-2 text-base leading-[1.8] text-foreground">{children}</p>
   );
 }
