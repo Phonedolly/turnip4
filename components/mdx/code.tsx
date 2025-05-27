@@ -39,7 +39,7 @@ export default function Code(props: {
   }
 
   return (
-    <code className="font-geist-mono hover:bg-bone/50 mx-[1.5px] rounded-md bg-bone-200 px-[4.25px] py-[3.5px] text-[13.5px] font-[470] tracking-[-0.028em] text-foreground hover:bg-bone-200/50 dark:bg-bone-800">
+    <code className="font-geist-mono hover:bg-bone/50 mx-[1.5px] rounded-md bg-bone-200 px-[4.25px] py-[3.5px] text-[13.5px] font-[470] tracking-[-0.028em] text-foreground hover:bg-bone-200/65 dark:bg-bone-800">
       {children}
     </code>
   );
