@@ -1,5 +1,5 @@
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { gruvboxDark } from "react-syntax-highlighter/dist/esm/styles/prism";
+import { vscDarkPlus as theme } from "react-syntax-highlighter/dist/esm/styles/prism";
 
 export default function Code(props: {
   children: React.ReactNode;
@@ -25,7 +25,7 @@ export default function Code(props: {
       <SyntaxHighlighter
         PreTag="div"
         language={language ?? match[1]}
-        style={gruvboxDark}
+        style={theme}
         codeTagProps={{
           className: "font-geist-mono text-sm sm:text-sm",
         }}
@@ -39,7 +39,7 @@ export default function Code(props: {
   }
 
   return (
-    <code className="rounded-md bg-bone-200 px-1.5 py-0.5 font-geist-mono font-[470] tracking-[-0.028em] text-foreground hover:bg-bone-100 dark:bg-bone-800">
+    <code className="font-geist-mono rounded-md bg-bone-200 px-1.5 py-0.5 font-[470] tracking-[-0.028em] text-foreground hover:bg-bone-100 dark:bg-bone-800">
       {children}
     </code>
   );
