@@ -4,9 +4,9 @@ import Link from "next/link";
 
 const Title = ({ title }: { title: string }) => {
   return (
-    <p className="text-xl font-bold tracking-tight text-foreground group-hover:text-primary lg:text-2xl lg:leading-tight">
+    <h1 className="text-xl font-bold tracking-tight text-foreground group-hover:text-primary lg:text-2xl lg:leading-tight">
       {title}
-    </p>
+    </h1>
   );
 };
 
@@ -42,7 +42,7 @@ export default function PostCard({
   return (
     <Link
       href={`/post/${frontmatter.titleId}`}
-      className="group flex flex-col gap-y-1"
+      className="group flex flex-col"
     >
       <Title title={frontmatter.title} />
       <div className="flex flex-col">
