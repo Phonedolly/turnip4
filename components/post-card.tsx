@@ -12,7 +12,7 @@ const Title = ({ title }: { title: string }) => {
 
 const Description = ({ description }: { description: string }) => {
   return (
-    <p className="text-base font-normal tracking-tight text-foreground group-hover:text-primary md:text-lg lg:text-lg">
+    <p className="text-base font-normal tracking-tight text-foreground group-hover:text-primary">
       {description}
     </p>
   );
