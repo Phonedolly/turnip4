@@ -21,9 +21,9 @@ const Title = ({ title }: { title: string }) => {
 
 const Description = ({ description }: { description: string }) => {
   return (
-    <p className="text-lg font-normal text-foreground md:text-lg">
+    <span className="text-lg font-medium text-foreground md:text-lg">
       {description}
-    </p>
+    </span>
   );
 };
 
@@ -33,15 +33,15 @@ const UpdateDate = ({ createdAt, updatedAt }: UpdateDateProps) => {
 
   return (
     <div className="flex w-1/2 max-w-fit flex-col border-b border-foreground">
-      <p className="text-sm font-normal tracking-tight text-foreground sm:text-base">
+      <span className="text-sm font-normal tracking-tight text-foreground sm:text-base">
         {createdDate}에 작성
-      </p>
-      <div className="flex w-fit flex-col">
-        <p className="text-sm font-normal tracking-tight text-foreground sm:text-base">
-          {updatedDate}에 업데이트
-        </p>
-        {/* <Divider /> */}
-      </div>
+      </span>
+      {/* <div className="flex w-fit flex-col"> */}
+      <span className="text-sm font-normal tracking-tight text-foreground sm:text-base">
+        {updatedDate}에 업데이트
+      </span>
+      {/* <Divider /> */}
+      {/* </div> */}
     </div>
   );
 };
