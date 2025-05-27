@@ -1,0 +1,172 @@
+---
+title: TypeScript에서 타입이 보장된 try-catch 구문 사용하기
+description: TypeScript를 사용하면 예외를 처리할 때 타입을 보장할 수 있습니다
+tags:
+  - TypeScript
+categories:
+  - TypeScript
+titleId: typed-try-catch
+readingTime: 5.75
+createdAt: 1736531224553
+updatedAt:
+  - 1736531224553
+  - 1748356329014
+---
+JavaScript에서는 모든 표현식(expression)을 던질 수 있습니다. 일반적으로는(관례상으로는) 오류(`Error`)를 던지지만, 이론적으로는 아래와 같이도 가능합니다.
+```typescript
+throw 404;
+throw "Invalid pathname!"
+```
+하지만 타입스크립트에서는 오류를 잡을 때(catch) 오류의 타입을 보장해주지는 않습니다.
+```typescript
+const something = /.../
+try {
+	if(something === "not found") {
+		throw 404;
+	} else if (!something.includes("hello")) {
+		throw "Invalid pathname!";
+	}
+	doAnotherThing(); /* It may be throw a error */
+} catch (e) {
+	console.error(e);
+}
+```
+위 코드에서
+
+- `something`이 `not found`인 경우
+- 그리고 `hello`를 포함하지 않는 경우 등
+
+명시적인 에러 처리 2곳이 있습니다. 이 경우 `e`의 타입은 `number` 혹은 `string`임을 쉽게 알 수 있습니다.
+
+하지만 또 다른 함수 `doAnotherThing()`에서 어떤 에러를 던질 수 있는지는 알기 까다롭습니다. 정확히는, 타입스크립트의 타입 검사기가 저 함수 내부까지 들여다보는 것은 리소스 낭비입니다.
+
+`doAnotherThing()` 함수 내부에서 또 다른 ***에러를 던질 수 있는*** 함수를 호출할지도 모르는 일입니다. 만약 Node.js 등 자바스크립트를 시스템과 통신할 수 있는 컨텍스트에서 사용한다면 모든 에러 타입을 추론하기란 사실상 불가능합니다.
+
+이렇게 모든 경우를 고려하는 건 결국 의미가 없습니다 타입 검사기가 에러에 대해서 타입을 보장하지 않고, Promise의 정의도 느슨하게 설계하면 간편해집니다.
+# Promise의 제네릭 인수와 Promise.reject()의 타입
+
+마찬가지로 Promise에서 제네릭 파라미터로 타입을 정의해주어도, `Promise.reject()`가 던지는 에러 또한 타입이 보장되지 않습니다.
+
+```typescript
+new Promise<string>((resolve, reject) =>{
+	const response: Record<string, any> = fetchSomething();
+	if(response.code === 404) {
+		reject(404);
+	}
+	resolve()
+})
+```
+
+여기서 TypeScript에서는 `Promise.reject()`를 어떻게 정의하고 있는지 살펴봅시다. 아래는 [TypeScript 소스 트리](https://github.com/microsoft/TypeScript)의 **src/lib/es2015.promise.d.ts**입니다.
+
+```typescript
+interface PromiseConstructor {
+    /**
+     * A reference to the prototype.
+     */
+    readonly prototype: Promise<any>;
+
+    /**
+     * Creates a new Promise.
+     * @param executor A callback used to initialize the promise. This callback is passed two arguments:
+     * a resolve callback used to resolve the promise with a value or the result of another promise,
+     * and a reject callback used to reject the promise with a provided reason or error.
+     */
+    new <T>(executor: (resolve: (value: T | PromiseLike<T>) => void, reject: (reason?: any) => void) => void): Promise<T>;
+
+    /**
+     * Creates a Promise that is resolved with an array of results when all of the provided Promises
+     * resolve, or rejected when any Promise is rejected.
+     * @param values An array of Promises.
+     * @returns A new Promise.
+     */
+    all<T extends readonly unknown[] | []>(values: T): Promise<{ -readonly [P in keyof T]: Awaited<T[P]>; }>;
+
+    // see: lib.es2015.iterable.d.ts
+    // all<T>(values: Iterable<T | PromiseLike<T>>): Promise<Awaited<T>[]>;
+
+    /**
+     * Creates a Promise that is resolved or rejected when any of the provided Promises are resolved
+     * or rejected.
+     * @param values An array of Promises.
+     * @returns A new Promise.
+     */
+    race<T extends readonly unknown[] | []>(values: T): Promise<Awaited<T[number]>>;
+
+    // see: lib.es2015.iterable.d.ts
+    // race<T>(values: Iterable<T | PromiseLike<T>>): Promise<Awaited<T>>;
+
+    /**
+     * Creates a new rejected promise for the provided reason.
+     * @param reason The reason the promise was rejected.
+     * @returns A new rejected Promise.
+     */
+    reject<T = never>(reason?: any): Promise<T>;
+
+    /**
+     * Creates a new resolved promise.
+     * @returns A resolved promise.
+     */
+    resolve(): Promise<void>;
+    /**
+     * Creates a new resolved promise for the provided value.
+     * @param value A promise.
+     * @returns A promise whose internal state matches the provided promise.
+     */
+    resolve<T>(value: T): Promise<Awaited<T>>;
+    /**
+     * Creates a new resolved promise for the provided value.
+     * @param value A promise.
+     * @returns A promise whose internal state matches the provided promise.
+     */
+    resolve<T>(value: T | PromiseLike<T>): Promise<Awaited<T>>;
+}
+
+declare var Promise: PromiseConstructor;
+```
+
+여기서 두 가지를 알 수 있습니다.
+
+- 모든 `resolve()` 메서드는 Promise 선언 시의  제네릭 인수 `T` 타입을 따라야합니다.
+- 하지만 모든 `reject()`에 대해서는 타입이 `any`로 느슨하게 설정되어 있습니다.
+
+# try-catch에서 타입 검사 함수 사용
+
+타입스크립트에서는 그나마 다행히도, 타입 검사 함수로 타입을 보장할 수 있습니다.
+
+```typescript
+type MyResponseError = {
+  type: "myResponseError";
+  statusCode: 200 | 204 | 400 | 404 | 500;
+};
+
+function isMyResponseError(res: any): res is MyResponseError {
+  if (!(typeof res !== "object")) {
+    return false;
+  }
+  if (
+    res.type !== "myResponseError" &&
+    res.responseCode !== 200
+    /* some conditions */
+  ) {
+    return false;
+  }
+  return true;
+}
+
+const something = /.../;
+
+try {
+  // doAnotherThing(); /* It may be throw a error */
+} catch (unknownError) {
+  if (!isMyResponseError(unknownError)) {
+	/* do something... */
+  } else {
+    const error = unknownError; // error is asserted as MyResponseError
+  }
+}
+```
+
+예제 코드에서는 타입 검사 함수 `isMyResponseError()`를 작성했습니다. 이 함수의 검사를 통과하는 에러는 타입이 보장됩니다.
+
+> 타입 검사 함수를 작성해도 괜찮지만 , [zod](https://zod.dev/)의 `safeParse()`등 헬퍼 함수를 활용하면 간편하면서도 더욱 안전합니다.
