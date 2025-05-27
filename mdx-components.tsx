@@ -14,6 +14,7 @@ import P from "@/components/mdx/p";
 import Pre from "@/components/mdx/pre";
 import UL from "@/components/mdx/ul";
 import Img from "./components/mdx/img";
+import Blockquote from "./components/mdx/blockquote";
 
 export function useMDXComponents(components: MDXComponents): MDXComponents {
   return {
@@ -32,5 +33,6 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
     code: Code,
     pre: Pre,
     img: Img,
+    blockquote: Blockquote,
   };
 }
