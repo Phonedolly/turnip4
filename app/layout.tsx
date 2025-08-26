@@ -5,6 +5,7 @@ import { Inconsolata, Roboto } from "next/font/google";
 import localFont from "next/font/local";
 
 import Header from "@/components/header";
+import GoogleAnalytics from "@/components/google-analytics";
 import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = {
@@ -58,6 +59,7 @@ export default function RootLayout({
           <Header />
           {children}
         </div>
+        <GoogleAnalytics GA_MEASUREMENT_ID={process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || ''} />
       </body>
     </html>
   );
