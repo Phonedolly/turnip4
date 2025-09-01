@@ -5,8 +5,8 @@ import readingTime from "reading-time";
 
 /**
  * @description write or update the createdAt of mdx file to posts directory. if
- * createdAt is already exists, it will be overwritten. All of updatedAts will
- * be cleared to current timestamp (equal to (new) createdAt)
+ * createdAt is already exists, it will be overwritten. current timestamp will
+ * be added to updatedAt array.
  * @example
  * ```bash
  * npm run publish [post-id]
@@ -27,8 +27,8 @@ const publish = async () => {
   frontmatter.readingTime = time.minutes;
 
   const now = Date.now();
-  frontmatter.createdAt = now;
-  frontmatter.updatedAt = [now];
+  frontmatter.createdAt = now; // overwrite createdAt
+  frontmatter.updatedAt.push(now); // add current timestamp to updatedAt array
 
   const updatedContent = matter.stringify(content, frontmatter);
   fs.writeFileSync(targetMdxPath, updatedContent);
